@@ -1,0 +1,51 @@
+#Postfix to Expression Tree
+#Evaluate the Expression Tree
+#Unoptimized for use, readability and performance.
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = self.right = None
+        
+    def display(self):
+        t = self
+        if t.left is not None:
+            t.left.display()
+        print(t.data)
+        if t.right is not None:
+            t.right.display()
+    
+# class Tree:
+#     def __init__(self, data):
+#         self.head = Node(data)
+    
+            
+stack = []
+expression = input("Enter the postfix expression(separate operands and operators using space):\n").split()
+for token in expression:
+    try:
+        stack.append(Node(int(token)))
+    except:
+        num1 = stack.pop()
+        num2 = stack.pop()
+        t = Node(token)
+        t.right, t.left = num1, num2
+        stack.append(t)
+print("The result is ")
+t = stack.pop()
+t.display()
+
+def solve_expression(node):
+    try:
+        return int(node.data)
+    except:
+        if node.data == '+':
+            return solve_expression(node.left) + solve_expression(node.right)
+        elif node.data == '-':
+            return solve_expression(node.left) - solve_expression(node.right)
+        elif node.data == '*':
+            return solve_expression(node.left) * solve_expression(node.right)
+        elif node.data == '/':
+            return solve_expression(node.left) / solve_expression(node.right)
+
+print(solve_expression(t))
