@@ -1,7 +1,8 @@
 #Merge k arrays
-#Unoptimized for readibility and use
+#Unoptimized for readibility, performance and use
 
 def merge_k_arrays(*arrays):
+    #Time Complexity = O(k*n), where k = No of arrays, and n = total number of elements in all the arrays.
     indices = [0 for x in range(len(arrays))]
     minval = None
     size = sum([len(array) for array in arrays])
@@ -24,3 +25,6 @@ print(merge_k_arrays([1, 3, 5, 7], [2, 4, 6], [1, 5, 9], [2, 8, 12], [11, 12, 13
 #TODO
 #Update minval to a dictionary and rename for better readibility.
 #Rename k in loop to smth meaningful.
+
+#Analysis
+#Seems very inefficient. Maybe better to merge two arrays at a time and keep combining them like that. Might reduce to O(n*logk)
