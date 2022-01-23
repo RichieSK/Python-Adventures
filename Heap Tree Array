@@ -1,0 +1,36 @@
+#Unoptimized version
+import numpy as np
+def heap_tree_array(lst):
+    ar = np.array([None for x in range(4)])
+    for e in lst:
+        ar = insert_node(ar, e, 1)
+    return ar
+
+def insert_node(ar, val, index):
+    if ar[index] is None:
+        ar[index] = val
+    else:
+        if val > ar[index]:
+            temp = ar[index]
+            ar[index] = val
+            ar = insert_node(ar, temp, index)
+        else:
+            if len(ar) <= index*2+1:
+                ar = np.concatenate((ar, np.array([None for x in range(index * 4)])))
+            if ar[index * 2] is None:
+                ar[index * 2] = val
+            elif ar[index * 2 + 1] is None or ar[index * 2 + 1] < val:
+                temp = ar[index * 2+1]
+                ar[index * 2+1] = val
+                if temp is not None:
+                    ar = insert_node(ar, temp, index * 2+1)
+            elif ar[index * 2] < val:
+                temp = ar[index * 2]
+                ar[index * 2] = val
+                ar = insert_node(ar, temp, index*2)
+            else:
+                ar = insert_node(ar, val, index*2)
+    return ar
+
+tree = heap_tree_array([5, 7, 2, 3, 8, 1, 10, 2, 8, 5, 8])
+print(tree)
