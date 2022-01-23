@@ -1,0 +1,59 @@
+#Unoptimized version
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.right = self.left = None
+
+def build_heap_tree(lst):
+    root = None
+    for e in lst:
+        if root == None:
+            root = Node(e)
+        else:
+            if  e >= root.data:
+                n = Node(e)
+                n.left = root
+                root = n
+            else:
+                root = insertNode(root, e)
+    return root
+
+def insertNode(root, e):
+    if root.left is None:
+        root.left = Node(e)
+    elif root.right is None:
+        root.right = Node(e)
+    else:
+        if root.left.data >= e and root.right.data >= e:
+            root.left = insertNode(root.left, e)
+        elif root.left.data >= e:
+            root.left = insertNode(root.left, e)
+        else:
+            root.right = insertNode(root.right, e)
+    return root
+
+def display_heap_tree(root):
+    queue = [root]
+    level = 1
+    nodes_in_level = [0, 1]
+    while len(queue) != 0:
+        r = queue.pop()
+        print(level, ':', r.data)
+        nodes_in_level[level] -= 1
+        if r.left is not None:
+            queue.append(r.left)
+            if len(nodes_in_level) == level+1:
+                nodes_in_level.append(1)
+            else:
+                nodes_in_level[level+1] += 1
+        if r.right is not None:
+            queue.append(r.right)
+            if len(nodes_in_level) == level+1:
+                nodes_in_level.append(1)
+            else:
+                nodes_in_level[level+1] += 1
+        if nodes_in_level[level] == 0:
+            level += 1
+
+# tree = build_heap_tree([5, 7, 2, 3, 8, 1, 10, 2, 8, 5, 8])
+# display_heap_tree(tree)
