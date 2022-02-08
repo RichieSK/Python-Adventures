@@ -1,0 +1,110 @@
+Question: 
+There are C cakes in a row, numbered from 1 to C. There are N children, each of whom have selected a consecutive set of cakes to eat. That is, Child i has decided to eat all the cakes from Si to Ei, end points inclusive. If there is a cake which appears in some two childrens' set, then they will fight because both of them want to eat that cake, and you don't want that to happen.
+
+You will be given an integer K which will be either 0 or 1. If K is 0, then you should find out if some two children will fight. Print "Good" if no one fights, and "Bad" if someone fights.
+
+If K is 1, then you can persuade at most one child to change his decision to some other set of cakes. But the number of cakes that he eats must be the same. That is, if Child i had initially decided that he wants to eat the cakes from Si to Ei, then you could persuade the child to instead eat the cakes from X to Y instead, for any valid X and Y (ie. 1 ≤ X ≤ Y ≤ C), provided that the number of cakes is the same (ie. Ei - Si + 1 = Y - X + 1). If after persuading at most 1 Child to change his decision, no fights happen, then print "Good". But if no matter what you do, someone will fight, then print "Bad".
+
+Input format
+The first line of each test case contains three integers C, N and K denoting the number of cakes, number of children and K, respectively.
+
+The i-th of the next N lines contains two space separated integers Si and Ei which denotes the initial decision of Child i. That is, Child i wants to eat from cake Si to cake Ei.
+
+Output format
+For each test case, output a single line containing "Good" or "Bad".
+
+Constraints
+1 ≤ T ≤ 10
+1 ≤ C ≤ 109
+1 ≤ N ≤ 105
+0 ≤ K ≤ 1
+1 ≤ Si, Ei ≤ C
+
+My Rough Thoughts:
+Number of cakes = C
+Number of children = N
+K = 0/1 = Number of children you can convince to change.
+
+Case K = 0:
+  Straightforward. Just check if there is any conflict between the children. How?
+  Brute Force: Compare each interval to all the previous ones.
+  Number of checks is 1 + 2 + ... n-1 = O(n^2).
+
+  Method 1: Sort all the children by their Si value. Then compare the Ei value of the lesser interval
+  to the S(i+1) value of the next interval.
+  If Ei > S(i+1), there is conflict, return 'Bad'.
+  Else, keep iterating until S(N-1). Stop iteration at Nth child.
+  Time Complexity: O(N*log(N))
+
+Case K=1:
+  If there is a conflict, you can change the decision of at most one child.
+  If there is more than one conflict, then it is impossible.
+  If there is a conflict, you can move the child with the lesser (Ei-Si) to a space that is unoccupied,
+  if there exists such a space(ii).
+
+  (ii) How to check if such space exists?
+  Brute Force: Just iterate through all the numbers from 1 to C - (Ei-Si) and check whether such an interval exists.
+  Time Complexity: O(C*N)
+  Compare Ei - S(i+1) for all values. If the value > Si-Ei, then we found our new position.
+
+Actual Solution In Python:
+
+def check_cakes(n, cake_indices):
+  for i in range(n-1):
+    if cake_indices[i][1] >= cake_indices[i+1][0]:
+      return -1
+  else:
+    return 0
+
+def check_editable_cakes(n, cake_indices):
+  num_conflicts = 0
+  conflict_indices = []
+  for i in range(n-1):
+    if cake_indices[i][1] >= cake_indices[i+1][0]:
+      num_conflicts += 1
+      conflict_indices.append((i, i+1))
+  if num_conflicts == 0:
+    return 0
+  elif num_conflicts == 1:
+    num_cakes = 1 + cake_indices[conflict_indices[0][0]][1] - cake_indices[conflict_indices[0][0]][0]
+    if find_shift(cake_indices[:conflict_indices[0][0]] + cake_indices[conflict_indices[0][0]+1:], num_cakes):
+      return 0
+    return -1
+  else:
+    for child in conflict_indices[0]:
+      for children in conflict_indices:
+        if child not in children and child == conflict_indices[0][1]:
+          return -1
+        if child not in children:
+          break
+      else:
+        num_cakes = 1 + cake_indices[child][1] - cake_indices[child][0]
+        if find_shift(cake_indices[:child] + cake_indices[child + 1:], num_cakes):
+          return 0
+        return -1
+
+def find_shift(cakes, interval):
+  l = 0
+  for tup in cakes:
+    r = tup[0]
+    if r - l - 1 >= interval:
+      return True
+    l = tup[1]
+  return False
+    
+c, n, k = [int(x) for x in input().split()]
+cake_indices = []
+for i in range(n):
+  cake_indices.append(tuple(int(x) for x in input().split()))
+cake_indices.sort(key = lambda x: x[0])
+if k == 0:
+  if check_cakes(n, cake_indices) == 0:
+    print("Good")
+  else:
+    print("Bad")
+if k == 1:
+  if check_editable_cakes(n, cake_indices) == 0:
+    print("Good")
+  else:
+    print("Bad")
+
