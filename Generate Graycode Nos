@@ -1,0 +1,44 @@
+#To generate graycode for upto 2^n numbers
+#Basic Algorithm.
+# I looked at the pattern for graycode. Let's pick the following example. We'll have to flip the index i at each step.
+# 000 - flip i=0
+# 001 - flip i=1
+# 011 - flip i=0
+# 010 - flip i=2
+# 110 - flip i=0
+# 111 - flip i=1
+# 101 - flip i=0
+# 100
+
+# There's this mirroring property to the flips we perform at each step. So I thought a binary tree with in-order traversal might do the trick. Look at the following example
+#     0
+#   1
+#     0
+# 2
+#     0
+#   1
+#     0
+# Each node represents the index from the right that has to be flipped. For easier implementation, I reversed the binary string. That is 011 = 110 as output.
+
+# Time Complexity: O(2^n)
+# Space Complexity: O(2^n), representing the length of the string
+
+def graycode(n):
+  s = '0' * n
+  print(s)
+  flip(s, n-1) #1
+
+def flip(s, n):
+  if n==0:
+    s = str(abs(int(s[0])-1)) + s[1:]
+    print(s[::-1])
+  else:
+    s = flip(s, n-1)
+    #n represents the need to flip the ith element
+    #n = 1 here. Flip the 1th index
+    s = s[:n] + str(abs(int(s[n])-1)) + s[n+1:]
+    print(s[::-1])
+    s = flip(s, n-1)
+  return s
+
+graycode(4)
